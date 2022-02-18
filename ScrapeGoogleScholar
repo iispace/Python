@@ -1,3 +1,6 @@
+## The source of this code comes from 'https://dev.to/dmitryzub/scrape-google-scholar-with-python-32oh'
+## A slight modification has been done to separately get the results provided in a form of a PDF.
+
 import requests, lxml, os, json, numpy as np
 from bs4 import BeautifulSoup
 
@@ -10,7 +13,7 @@ headers = {
 }
 
 year_to_start = 2021   # year to start search
-search_keyword = "빅데이터 활용 사례"
+search_keyword = "검색 주제어"
 search_language = "ko"  # or "en"
 max_start = 10
 
