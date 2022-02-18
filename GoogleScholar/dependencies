@@ -3,6 +3,5 @@ Python version 3.9.7 with following dependencies
 !pip install requests
 !pip install lxml
 !pip install beautifulsoup4
-!pip install google-search-results
 !pip install numpy
 
