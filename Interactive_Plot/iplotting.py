@@ -1,3 +1,7 @@
+/*
+This was inspired from https://towardsdatascience.com/building-rnn-lstm-and-gru-for-time-series-using-pytorch-a46e5b094e7b
+*/
+
 import plotly.graph_objs as go
 from plotly.offline import iplot
 
