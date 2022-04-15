@@ -16,9 +16,13 @@ def iplotting(df, columns_for_x, colors, title, xlabel, ylabel):
     data.append(value)
 
   layout = dict(
-      title = title,
+      title = {'text': title,
+               'y':0.9,
+               'x':0.45,
+               'xanchor': 'center'},
       xaxis = dict(title=xlabel, ticklen=5, zeroline=False),
       yaxis = dict(title=ylabel, ticklen=5, zeroline=False)
   )
+  
   fig = dict(data=data, layout=layout)
   iplot(fig)
