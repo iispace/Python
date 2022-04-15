@@ -26,3 +26,15 @@ def iplotting(df, columns_for_x, colors, title, xlabel, ylabel):
   
   fig = dict(data=data, layout=layout)
   iplot(fig)
+
+  
+### Usage Example ###
+/* 
+  df = pd.read_csv('data.csv')  # a csv file having 2 columns with each name of 'col_name_1' and 'col_name_2'
+  columns_plot = ['col_name_1', 'col_name_1']
+  line_colors = ["#ff7d00", "#8D8686"]
+  title = "Interactive Plotting Example"
+  xlabel = 'index'
+  ylabel = 'value'
+  iplotting(df, columns_plot, line_colors, title, xlabel, ylabel)
+*/
