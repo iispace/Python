@@ -56,3 +56,11 @@ for i, (image, classes, coordinates) in enumerate(zip(images, classess, coordina
     for j, (_class, _coordinates) in enumerate(zip(classes, coordinates)):
         print(f'class[{i}][{j}]:       {_class}')
         print(f'coordinates[{i}][{j}]: {_coordinates}')
+
+"""
+image[0]: 000000386298.jpg
+class[0][0]:       cat
+coordinates[0][0]: {'x': 97.60152284263958, 'y': 284.89086294416245, 'width': 195.0, 'height': 217.0}
+class[0][1]:       dog
+coordinates[0][1]: {'x': 554.0507614213197, 'y': 219.89086294416245, 'width': 171.8984771573604, 'height': 247.0}
+"""
