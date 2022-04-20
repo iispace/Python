@@ -1,4 +1,4 @@
-def readCocoFormatJson(annot_file):
+def readCocoAnnotations(annot_file):
     """
     In Coco format, each bounding box is described using four values 
     [x_min, y_min, width, height] and category_id is described as an integer.
