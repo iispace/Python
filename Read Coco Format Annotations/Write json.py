@@ -63,7 +63,7 @@ with open(label_file, 'r') as f:
         class_name_to_id[class_name] = class_id
         data['categories'].append(dict(supercategory=None, id=class_id, name=class_name))
 
-dst_folder = r"D:\Image_Seg\image_sources\BboxAnnoted_coco"
+dst_folder = r"D:\transform_coco"
 out_ann_file = os.path.join(dst_folder, "annotations.json")
 
 with open(out_ann_file, 'w') as f:
