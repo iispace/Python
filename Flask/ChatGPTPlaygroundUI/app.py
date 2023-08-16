@@ -18,7 +18,7 @@ def convert_to_dict(list_):
 
 @app.route("/")
 def index():
-    return render_template("index_1.html") # index.html 파일은 "templates" 폴더 하위에 있어야 함.
+    return render_template("index.html") # index.html 파일은 "templates" 폴더 하위에 있어야 함.
 
 @app.route("/get")
 def get_bot_response(): 
