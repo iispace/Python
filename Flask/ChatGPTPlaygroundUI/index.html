@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>OpenAI GPT Chat as a Learning Tool</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #35372D;
+            color: #ededf2;
+        }
+        .container {
+            margin-top: 20px;
+        }
+        #chat {
+            height: 400px;
+            overflow-y: scroll;
+            background-color: #444654;
+        }
+        .list-group-item {
+            border-radius: 5px;
+            background-color: #444654;
+        }
+        . submit {
+            background-color:#21232e;
+            color: white;
+            border-radius: 5px;
+        }
+        .input-group input {
+            background-color: #444654;
+            color: #ededf2;
+            border: none;
+        }
+        .panel-hyperparameter {
+             background-color: gray
+        }
+        .config-group {
+            display: flex;
+            flex-grow: 1;
+            padding-top: 10px;
+            padding-left: 0px
+        }
+        .config-group>.slidecontainer {
+            border-right: 1px solid darkgray ;
+            padding-left: 10px;
+            padding-right: 10px;
+            padding-bottom: 10px;
+        }
+        .hyperparam_value{
+            border: 1px solid lightgray;
+            padding-left:5px;
+            padding-right: 5px;
+            width: 40px;
+            position: relative;
+            float: right;
+            color: black;
+            text-align: right;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>OpenAI GPT Chat as a Learning Tool</h2>
+        <hr>
+      
+        <!-- Hyperparameter setting container -->
+        <div class="panel panel-default">
+            <div class="panel-heading">Hyperparameters</div>
+            <div class="panel-hyperparameter">
+                <ul class="config-group">
+                    <div class="slidecontainer">
+                        <div>temperature: <input type="text" class="hyperparam_value" id="temperature_inputbox" 
+                            value="0.2"></div>
+                        <input type="range" min=0.0 max=2.0 value=0.2 step=0.1 class="slider" id="temperature">
+                    </div>
+                    <div class="slidecontainer">
+                        <div>top-p: <input type="text" class="hyperparam_value" id="topp_inputbox" value="0.1"></div>
+                        <input type="range" min=0.0 max=1.0 value=0.1 step=0.1 class="slider" id="top-p">
+                    </div>
+                    <div class="slidecontainer">
+                        <div>n: <input type="text" class="hyperparam_value" id="n_inputbox" value="1"></div>
+                        <input type="range" min=1 max=10 value=1 step=1 class="slider" id="n">
+                    </div>
+                </ul>
+            </div>
+        </div>
+      
+        <!-- chat response container -->
+        <div class="panel panel-default">
+            <div class="panel-heading">Chat Messages</div>
+            <div class="panel-body" id="chat">
+                <ul class="list-group">
+                </ul>
+            </div>
+        </div>
+
+        <!-- user query input container -->
+        <div class="input-group">
+            <input type="text" id="userInput" class="form-control" placeholder="Type your query here">
+            <span class="input-group-btn">
+                <button class="btn btn-default" id="submit">Submit</button>
+            </span>
+        </div>
+    </div>
+  
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script>
+        // input box에 값을 바꾸면 슬라이드에도 적용시키는 코드
+        $("#temperature_inputbox").change(function(){
+            var temp_value = Number($("#temperature_inputbox").val())
+            // 입력 값이 범위 내에 있는 지 확인
+            var temp_max = Number($("#temperature").prop("max"))
+            var temp_min = Number($("#temperature").prop("min"))
+            // console.log("temp_max:",temp_max)
+            if (temp_value > temp_max || temp_value < temp_min){
+                alert("temperature 범위: 0.0 ~ 2.0")
+                temp_value = $("#temperature").prop("value")
+                $("#temperature_inputbox").val(temp_value)
+            }
+            $("#temperature").val(temp_value)
+            // $("#temperature").slider('refresh')
+        })
+        $("#topp_inputbox").change(function(){
+            var topp_value = Number($("#topp_inputbox").val())
+            // 입력 값이 범위 내에 있는 지 확인
+            var topp_max = Number($("#top-p").prop("max"))
+            var topp_min = Number($("#top-p").prop("min"))
+            // console.log("topp_max:",topp_max)
+            if (topp_value > topp_max || topp_value < topp_min){
+                alert("top-p 범위: 0.0 ~ 1.0")
+                topp_value = $("#top-p").prop("value")
+                $("#topp_inputbox").val(topp_value)
+            }
+            $("#top-p").val(topp_value)
+        })
+        $("#n_inputbox").change(function(){
+            var n_value = Number($("#n_inputbox").val())
+            // 입력 값이 범위 내에 있는 지 확인
+            var n_max = Number($("#n").prop("max"))
+            var n_min = Number($("#n").prop("min"))
+            if (n_value > n_max || n_value < n_min){
+                alert("n 범위: 1 ~ 10")
+                n_value = $("#n").prop("value")
+                $("#n_inputbox").val(n_value)
+            }
+            $("#n").val(n_value)
+        })
+        // 슬라이드를 움직이면 input box 값도 변경시키는 코드
+        $("#temperature").change(function(){
+            var temperature_value = $("#temperature").val()
+            // $('#temperature_value').html(temperature_value)  // .html: html tag에 값 삽입할 때 사용
+            $("#temperature_inputbox").val(temperature_value)
+        })
+        $("#top-p").change(function(){
+            var topp_value = $("#top-p").val()
+            $("#topp_inputbox").val(topp_value)
+        })
+        $("#n").change(function(){
+            var n_value = $("#n").val()
+            $("#n_inputbox").val(n_value)
+        })
+
+        $("#submit").click(function(){
+            var userInput = $("#userInput").val();
+            var temperature_value = Number($("#temperature_inputbox").val())
+            var topp_value = Number($("#topp_inputbox").val())
+            var n_value = Number($("#n_inputbox").val())
+
+            var myconfig = {"temperature": temperature_value,
+                            "top_p": topp_value,
+                            "n": n_value
+            }
+
+            var myconfig_str = JSON.stringify(myconfig)
+
+            $.get("/get?msg=" + userInput + "," + myconfig_str, function(data){
+                $("#chat").append("<li class='list-group-item'><b>You:</b> " + userInput + "</li>");
+                $("#chat").append("<li class='list-group-item'><b>OpenAI:</b> " + data + "</li>");
+            });
+        });
+    </script>
+</body>
+</html>
