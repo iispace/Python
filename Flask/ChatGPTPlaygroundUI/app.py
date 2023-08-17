@@ -1,41 +1,47 @@
-from flask import Flask, request, render_template, jsonify
-import openai, json 
-import config  
+""" 
+Ref: Python Flask Tutorial: Full-Featured Web App Part 1 - Getting Started (https://www.youtube.com/watch?v=MwZwr5Tvyxo)
 
+"""
+# %%
+from flask import Flask, request, render_template, jsonify
+import openai, json, os 
+import config
+
+
+# %%
 app = Flask(__name__)
 
-# index.html의 jQuery에서 받은 리스트를 json 형식으로 변환하는 함수
+API_KEY = config.API_KEY
+
 def convert_to_dict(list_):
     dict = {}
     for item in list_:
         item = item.replace("{","").replace("}","").replace("\"","")
         k, v = item.split(":")
         value = float(v)
-        if k == "n":
+        if k == "n" or k == "max_tokens":
             value = int(v)
         dict[k] = value
     return dict   
 
 @app.route("/")
 def index():
-    return render_template("index.html") # index.html 파일은 "templates" 폴더 하위에 있어야 함.
+    return render_template("index_1.html") # index.html 파일은 "templates" 폴더 하위에 있어야 함.
 
 @app.route("/get")
 def get_bot_response(): 
     # Define chat completion parameters
-    openai.api_key = config.API_KEY 
-  
-    userTextwithParams = request.args.get("msg")
-    userText = userTextwithParams.split(",")[0]
-    myHyperParam=userTextwithParams.split(",")[1:] 
+    # openai.api_key = config.API_KEY 
+    openai.api_key = API_KEY 
+    
+    contexts = request.args.get("msg").split(",")
+    system_persona = contexts[0]
+    userText = contexts[1]
+    myHyperParam=contexts[2:] 
     myHyperParamDict = convert_to_dict(myHyperParam)
     
-    # print(f"userText: {userText}")
-    # print(f"myHyperParam: {myHyperParam}")
-    # print(f"myHyperParamDict: {myHyperParamDict}")
-    
     parameters = { "model": "gpt-3.5-turbo", 
-                   "messages": [{"role": "system", "content": "You are a helpful assistant."}, 
+                   "messages": [{"role": "system", "content": f"You are a helpful {system_persona}."}, 
                                 {"role": "user", "content": f"{userText}"}], 
                     # "stop": None, 
                     # "frequency_penalty": 0,
