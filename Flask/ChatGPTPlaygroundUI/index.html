@@ -5,21 +5,20 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <style>
         body {
-            background-color: #35372D;
+            background-color: #33704a;
             color: #ededf2;
         }
         .container {
             margin-top: 20px;
-            
         }
         #chat {
-            height: 400px;
+            height: 420px;
             overflow-y: scroll;
-            background-color: #444654;
+            background-color: rgb(16, 78, 43);
         }
         .list-group-item {
             border-radius: 5px;
-            background-color: #444654;
+            background-color: rgb(16, 78, 43);
         }
         . submit {
             background-color:#21232e;
@@ -27,19 +26,18 @@
             border-radius: 5px;
         }
         .input-group input {
-            background-color: #444654;
+            background-color: rgb(16, 78, 43);
             color: #ededf2;
-            border: none;
+            border: 1px solid whitesmoke ;
         }
         .panel-hyperparameter {
-             background-color: gray
+             background-color: rgb(80, 127, 100)
         }
         .config-group {
             display: flex;
             flex-grow: 1;
             padding-top: 10px;
             padding-left: 0px;
-            
         }
         .config-group>.slidecontainer {
             border-right: 1px solid darkgray ;
@@ -61,12 +59,11 @@
             color: black;
             text-align: right;
         }
-
         .slidecontainer .tooltiptext { 
                 visibility: hidden; 
                 width: 100px; 
-                background-color: rgb(68,70,84); 
-                color: #eae5e5; 
+                background-color: lightgray; 
+                color: rgb(30, 90, 120); 
                 text-align: center; 
                 border-radius: 5px; 
                 padding: 3px; 
@@ -94,23 +91,23 @@
             <div class="panel-hyperparameter">
                 <ul class="config-group">
                     <div class="slidecontainer">
-                        <span class="tooltiptext">temperature<br>(0.0 ~ 2.0)</span>
+                        <span class="tooltiptext"><b>temperature<br>(0.0 ~ 2.0)</b></span>
                         <div>temperature: <input type="text" class="hyperparam_value" id="temperature_inputbox" 
                             value="0.2"></div>
                         <input type="range" min=0.0 max=2.0 value=0.2 step=0.1 class="slider" id="temperature">
                     </div>
                     <div class="slidecontainer">
-                        <span class="tooltiptext">top-p<br>(0.0 ~ 1.0)</span>
+                        <span class="tooltiptext"><b>top-p<br>(0.0 ~ 1.0)</b></span>
                         <div>top-p: <input type="text" class="hyperparam_value" id="topp_inputbox" value="0.1"></div>
                         <input type="range" min=0.0 max=1.0 value=0.1 step=0.1 class="slider" id="topp">
                     </div>
                     <div class="slidecontainer">
-                        <span class="tooltiptext">n<br>(1 ~ 10)</span>
+                        <span class="tooltiptext"><b>n<br>(1 ~ 10)</b></span>
                         <div>n: <input type="text" class="hyperparam_value" id="n_inputbox" value="1"></div>
                         <input type="range" min=1 max=10 value=1 step=1 class="slider" id="n" title="number of response (1~10)">
                     </div>
                     <div class="slidecontainer">
-                        <span class="tooltiptext">max-tokens<br>(1 ~ 4096)</br></span>
+                        <span class="tooltiptext"><b>max-tokens<br>(1 ~ 4096)</b></span>
                         <div>max-token: 
                             <input type="text" class="hyperparam_value" id="maxtoken_inputbox" value="512">
                         </div>
@@ -124,8 +121,6 @@
         <div class="panel panel-default">
             <div class="panel-heading">Dialogue</div>
             <div class="panel-body" id="chat">
-                <ul class="list-group">
-                </ul>
             </div>
         </div>
 
@@ -210,7 +205,6 @@
             $("#maxtoken_inputbox").val(maxtoken_value)
         })
 
-
         $("#submit").click(function(){
             var userInput = $("#userInput").val();
             var temperature_value = Number($("#temperature_inputbox").val())
@@ -223,7 +217,6 @@
                             "n": n_value,
                             "max_tokens": maxtoken_value
             }
-
             var myconfig_str = JSON.stringify(myconfig)
 
             $.get("/get?msg=" + userInput + "," + myconfig_str, function(data){
