@@ -48,8 +48,7 @@ def get_bot_response():
     print(f"parameters: {parameters}")
     # Create chat completion 
     response = openai.ChatCompletion.create(**parameters) 
-    answer = response.choices[0].message['content'] 
-    return answer
+    return response
     
 if __name__ == "__main__":
     app.run()
