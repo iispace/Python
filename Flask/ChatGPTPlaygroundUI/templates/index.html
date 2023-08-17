@@ -3,10 +3,13 @@
 <head>
     <title>OpenAI GPT Chat as a Learning Tool</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <!-- <link rel="stylesheet" href="./style_learningtool.css"> -->
+    
     <style>
         body {
             background-color: #33704a;
             color: #ededf2;
+            min-width: 1000px;
         }
         .container {
             margin-top: 20px;
@@ -80,6 +83,18 @@
             visibility: visible; 
             opacity: 1; 
         }
+        .comboboxcontainer{
+            padding-left: 10px;
+        }
+        .combobox {
+            border-radius: 5px;
+            color: black;
+            font-size: medium;
+        }
+        .config-group .comboboxcontainer  {
+            border-right: 1px solid darkgray ;
+            padding-right: 10px;
+        }
     </style>
 </head>
 <body>
@@ -114,14 +129,27 @@
                         </div>
                         <input type="range" min=1 max=4096 value=512 step=1 class="slider" id="maxtoken">
                     </div>
+                    <div class="comboboxcontainer">
+                        <label for="system-content-select">system content:</label>
+                        <div class="elementcontainer">
+                            <select class="combobox" name="system-contents" id="system-content-select">
+                                <option value="">--Please choose an option--</option>
+                                <option value="Python Code Generator">Python Code Generator</option>
+                                <option value="Python Comments Generator">Python Comments Generator</option> 
+                                <option value="Python Tutor">Python Tutor</option> 
+                            </select>
+                        </div>
+                    </div>
                 </ul>
             </div>
         </div>
-        
+
         <!-- chat response container -->
         <div class="panel panel-default">
             <div class="panel-heading">Dialogue</div>
             <div class="panel-body" id="chat">
+                <!-- <ul class="list-group">
+                </ul> -->
             </div>
         </div>
 
@@ -136,6 +164,15 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script>
         $("#submit").click(function(){
+            let isvalid = check_system_persona()
+            let system_persona
+            if (isvalid){
+                system_persona = $("select[name=system-contents]").val()
+            }
+            else{
+                return
+            }
+            
             var userInput = $("#userInput").val();
             var temperature_value = Number($("#temperature_inputbox").val())
             var topp_value = Number($("#topp_inputbox").val())
@@ -147,9 +184,13 @@
                             "n": n_value,
                             "max_tokens": maxtoken_value
             }
+
             var myconfig_str = JSON.stringify(myconfig)
+            console.log("system_persona: " + system_persona)
+            console.log("userInput: " + userInput)
+            console.log("myconfig_str: " + myconfig_str)
             
-            $.get("/get?msg=" + userInput + "," + myconfig_str, function(data){
+            $.get("/get?msg=" + system_persona + "," + userInput + "," + myconfig_str, function(data){
                 $("#chat").append("<li class='list-group-item'><b>Learner:</b> " + userInput + "</li>");
                 let responses = data.choices
                 let n = data.choices.length
@@ -161,7 +202,7 @@
     </script>
     <!-- 공통 처리를 위한 스크립트 -->
     <script>
-        // hyperparameters input box에 값을 바꾸면 슬라이드에도 적용시키는 코드
+        // input box에 값을 바꾸면 슬라이드에도 적용시키는 코드
         function inputboxChangeHandler(event){
             let event_raiser = event.target.id
             let name= event_raiser.split("_")[0]
@@ -185,6 +226,15 @@
 
         $(".hyperparam_value").bind('change', inputboxChangeHandler)
         $(".slider").bind('change', slideChangeHandler)
+
+        function check_system_persona(){
+            let current_index = $("select[name=system-contents]").prop("selectedIndex")
+            if (current_index == 0){
+                alert("Please choose a system content.")
+                return false
+            }
+            return true
+        }
     </script>
 </body>
 </html>
