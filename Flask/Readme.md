@@ -1,6 +1,3 @@
-## ChatGPT Prayground like UI implemented using Flask
-<img src="https://github.com/iispace/Python/assets/24539773/f884205e-9a94-401e-aa82-98fbcb79d3c0" width=700>
-
 ## How to prepare coding environment using Flask in VSCode
   1. Create a virtual environment<br>
      <code>C:\project_folder>py -3 -m venv {myenvname}</code>
@@ -21,3 +18,5 @@
   10. When you finish coding in the file, "app.py", run the application by following command:<br>
      <code>({myenvname}) C:\project_folder>flask run</code>
       
+## ChatGPT Prayground like UI implemented using Flask
+<img src="https://github.com/iispace/Python/assets/24539773/f884205e-9a94-401e-aa82-98fbcb79d3c0" width=700>
