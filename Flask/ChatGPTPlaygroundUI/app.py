@@ -37,9 +37,6 @@ def get_bot_response():
     parameters = { "model": "gpt-3.5-turbo", 
                    "messages": [{"role": "system", "content": "You are a helpful assistant."}, 
                                 {"role": "user", "content": f"{userText}"}], 
-                    # "max_tokens": int(max_tokens), # 1024, 
-                    # "temperature": float(temperature), #0.7, 
-                    # "n": int(n), #1, 
                     # "stop": None, 
                     # "frequency_penalty": 0,
                     # "presence_penalty": 0
