@@ -28,6 +28,7 @@
         .input-group input {
             background-color: rgb(16, 78, 43);
             color: #ededf2;
+            /* border: none; */
             border: 1px solid whitesmoke ;
         }
         .panel-hyperparameter {
@@ -115,8 +116,8 @@
                     </div>
                 </ul>
             </div>
-           
         </div>
+        
         <!-- chat response container -->
         <div class="panel panel-default">
             <div class="panel-heading">Dialogue</div>
@@ -134,76 +135,6 @@
     </div>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script>
-        // input box에 값을 바꾸면 슬라이드에도 적용시키는 코드
-        $("#temperature_inputbox").change(function(){
-            var temp_value = Number($("#temperature_inputbox").val())
-            // 입력 값이 범위 내에 있는 지 확인
-            var temp_max = Number($("#temperature").prop("max"))
-            var temp_min = Number($("#temperature").prop("min"))
-            // console.log("temp_max:",temp_max)
-            if (temp_value > temp_max || temp_value < temp_min){
-                alert("temperature 범위: " + temp_min +" ~ " + temp_max)
-                temp_value = $("#temperature").prop("value")
-                $("#temperature_inputbox").val(temp_value)
-            }
-            $("#temperature").val(temp_value)
-        })
-        $("#topp_inputbox").change(function(){
-            var topp_value = Number($("#topp_inputbox").val())
-            // 입력 값이 범위 내에 있는 지 확인
-            var topp_max = Number($("#topp").prop("max"))
-            var topp_min = Number($("#topp").prop("min"))
-            // console.log("topp_max:",topp_max)
-            if (topp_value > topp_max || topp_value < topp_min){
-                alert("top-p 범위: " + topp_min +" ~ " + topp_max)
-                topp_value = $("#topp").prop("value")
-                $("#topp_inputbox").val(topp_value)
-            }
-            $("#topp").val(topp_value)
-        })
-        $("#n_inputbox").change(function(){
-            var n_value = Number($("#n_inputbox").val())
-            // 입력 값이 범위 내에 있는 지 확인
-            var n_max = Number($("#n").prop("max"))
-            var n_min = Number($("#n").prop("min"))
-            if (n_value > n_max || n_value < n_min){
-                alert("n 범위: " +n_min +" ~ " + n_max)
-                n_value = $("#n").prop("value")
-                $("#n_inputbox").val(n_value)
-            }
-            $("#n").val(n_value)
-        })
-        $("#maxtoken_inputbox").change(function(){
-            var maxtoken_value = Number($("#maxtoken_inputbox").val())
-            // 입력 값이 범위 내에 있는 지 확인
-            var maxtoken_max = Number($("#maxtoken").prop("max"))
-            var maxtoken_min = Number($("#maxtoken").prop("min"))
-            if (maxtoken_value > maxtoken_max || maxtoken_value < maxtoken_min){
-                alert("max-token 범위: " + maxtoken_min +" ~ " + maxtoken_max)
-                maxtoken_value = $("#maxtoken").prop("value")
-                $("#maxtoken_inputbox").val(maxtoken_value)
-            }
-            $("#maxtoken").val(maxtoken_value)
-        })
-        // 슬라이드를 움직이면 input box 값도 변경시키는 코드
-        $("#temperature").change(function(){
-            var temperature_value = $("#temperature").val()
-            // $('#temperature_value').html(temperature_value)  // .html: html tag에 값 삽입할 때 사용
-            $("#temperature_inputbox").val(temperature_value)
-        })
-        $("#topp").change(function(){
-            var topp_value = $("#topp").val()
-            $("#topp_inputbox").val(topp_value)
-        })
-        $("#n").change(function(){
-            var n_value = $("#n").val()
-            $("#n_inputbox").val(n_value)
-        })
-        $("#maxtoken").change(function(){
-            var maxtoken_value = $("#maxtoken").val()
-            $("#maxtoken_inputbox").val(maxtoken_value)
-        })
-
         $("#submit").click(function(){
             var userInput = $("#userInput").val();
             var temperature_value = Number($("#temperature_inputbox").val())
@@ -217,6 +148,7 @@
                             "max_tokens": maxtoken_value
             }
             var myconfig_str = JSON.stringify(myconfig)
+            
             $.get("/get?msg=" + userInput + "," + myconfig_str, function(data){
                 $("#chat").append("<li class='list-group-item'><b>Learner:</b> " + userInput + "</li>");
                 let responses = data.choices
@@ -224,9 +156,35 @@
                 $.each(responses, function(index, message){
                     $("#chat").append("<li class='list-group-item'><b>AI Response</b> [" + index + "] : "+  data.choices[index].message['content'] + "</li>");
                 })
-
             });
         });
+    </script>
+    <!-- 공통 처리를 위한 스크립트 -->
+    <script>
+        // hyperparameters input box에 값을 바꾸면 슬라이드에도 적용시키는 코드
+        function inputboxChangeHandler(event){
+            let event_raiser = event.target.id
+            let name= event_raiser.split("_")[0]
+
+            let input_value = Number($(this).val())
+            let max = Number($("#"+name).prop("max"))
+            let min = Number($("#"+name).prop("min"))
+            if (input_value > max || input_value < min){
+                alert(name + " 범위: " + min + " ~ " + max)
+                input_value = $("#"+name).prop("value")
+            }
+            $("#"+name).val(input_value) //slide에 값 반영 
+            $(this).val(input_value)     //inputbox에 값 반영
+        }
+        // 슬라이드를 움직이면 input box 값도 변경시키는 코드
+        function slideChangeHandler(event){
+            let name = event.target.id
+            var slide_value = $("#"+name).val()
+            $("#" + name + "_inputbox").val(slide_value)
+        } 
+
+        $(".hyperparam_value").bind('change', inputboxChangeHandler)
+        $(".slider").bind('change', slideChangeHandler)
     </script>
 </body>
 </html>
