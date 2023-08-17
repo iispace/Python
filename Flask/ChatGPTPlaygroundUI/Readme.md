@@ -1,2 +1,2 @@
 ## ChatGPT Prayground like UI implemented using Flask
-<img src="https://github.com/iispace/Python/assets/24539773/f884205e-9a94-401e-aa82-98fbcb79d3c0" width=700>
+<img src="https://github.com/iispace/Python/assets/24539773/4e95becf-85e2-40af-a72e-cd1f13cc86b2" width=700>
