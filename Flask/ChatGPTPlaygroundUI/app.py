@@ -1,57 +1,55 @@
 """ 
-Ref: Python Flask Tutorial: Full-Featured Web App Part 1 - Getting Started (https://www.youtube.com/watch?v=MwZwr5Tvyxo)
+ToDO:
+
+ 2023-08-18:I used a global variable named "messages" but this is not good practice and not thread safe. The global variable needs to be replaced with session variable.
+            The modification will be in progress soon.
 
 """
-# %%
 from flask import Flask, request, render_template, jsonify
 import openai, json, os 
 import config
 
-
-# %%
 app = Flask(__name__)
 
 API_KEY = config.API_KEY
+messages = []
 
-def convert_to_dict(list_):
-    dict = {}
-    for item in list_:
-        item = item.replace("{","").replace("}","").replace("\"","")
-        k, v = item.split(":")
-        value = float(v)
-        if k == "n" or k == "max_tokens":
-            value = int(v)
-        dict[k] = value
-    return dict   
+def chat_complete_request(system_persona, userText, myHyperParams):
+    openai.api_key = API_KEY 
+
+    message_item = {"role": "system", "content": f"You are a helpful {system_persona}."}
+    messages.append(message_item)
+    message_item = {"role": "user", "content": f"{userText}"}
+    messages.append(message_item)
+
+    parameters = { "model": "gpt-3.5-turbo", 
+                   "messages": messages,    
+                } 
+    myHyperParams_json = json.loads(myHyperParams)
+
+    parameters.update(myHyperParams_json)
+    
+    print(f"parameters: {parameters}")
+    # Create chat completion 
+    response = openai.ChatCompletion.create(**parameters)
+    message_item = {"role": "assistant", "content": response.choices[0].message['content']}
+    messages.append(message_item)
+    total_tokens = response['usage']['total_tokens']
+    print(f"### Total_tokens in this chat session: {total_tokens} ###") 
+    return response
 
 @app.route("/")
 def index():
-    return render_template("index_1.html") # index.html 파일은 "templates" 폴더 하위에 있어야 함.
+    return render_template("index_1.html") # index.html should be located under "templates" folder 
 
-@app.route("/get")
-def get_bot_response(): 
-    # Define chat completion parameters
-    # openai.api_key = config.API_KEY 
-    openai.api_key = API_KEY 
-    
-    contexts = request.args.get("msg").split(",")
-    system_persona = contexts[0]
-    userText = contexts[1]
-    myHyperParam=contexts[2:] 
-    myHyperParamDict = convert_to_dict(myHyperParam)
-    
-    parameters = { "model": "gpt-3.5-turbo", 
-                   "messages": [{"role": "system", "content": f"You are a helpful {system_persona}."}, 
-                                {"role": "user", "content": f"{userText}"}], 
-                    # "stop": None, 
-                    # "frequency_penalty": 0,
-                    # "presence_penalty": 0
-                } 
-    parameters.update(myHyperParamDict)
-    print(f"parameters: {parameters}")
-    # Create chat completion 
-    response = openai.ChatCompletion.create(**parameters) 
-    return response
+@app.route("/post", methods=["POST"])
+def get_data_from_form():
+    system_persona = request.json["system_persona"]
+    userText = request.json["userInput"]
+    myHyperParams = request.json["hyperparams"]
+    chat_response = chat_complete_request(system_persona, userText, myHyperParams)
+     
+    return chat_response
     
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)
