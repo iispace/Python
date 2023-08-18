@@ -22,12 +22,13 @@
             overflow-y: scroll;
             background-color: rgb(16, 78, 43);
         }
-        #chat-response {
-            color: rgb(183, 206, 225);
-        }
         .list-group-item {
             border-radius: 5px;
             background-color: rgb(16, 78, 43);
+        }
+
+        #chat-response {
+            color: rgb(183, 206, 225);
         }
         . submit {
             background-color:#21232e;
@@ -86,20 +87,19 @@
                 transition: opacity 0.3s; 
             } 
         .slidecontainer:hover .tooltiptext { 
-            visibility: visible; 
-            opacity: 1; 
+            visibility: visible;    opacity: 1; 
         }
         .comboboxcontainer{
             padding-left: 10px;
         }
         .combobox {
-            border-radius: 5px;
-            color: black;
-            font-size: medium;
+            border-radius: 5px;  color: black;  font-size: medium;
         }
         .config-group .comboboxcontainer  {
-            border-right: 1px solid darkgray ;
-            padding-right: 10px;
+            border-right: 1px solid darkgray ; padding-right: 10px;
+        }
+        .infospan {
+            float: right; padding-left: 3px;padding-right: 3px; border: darkgray solid 1px;
         }
     </style>
 </head>
@@ -147,6 +147,11 @@
                             </select>
                         </div>
                     </div>
+                    <div class="slidecontainer" style="margin-left: 10px; border-right: none;">
+                        <span class="tooltiptext"><b>Total Tokens<br>used in this session</b></span>
+                        T. Tokens <br>
+                        <span class="infospan" id="total-tokens"></span>
+                    </div>
                 </ul>
             </div>
         </div>
@@ -155,9 +160,12 @@
         <div class="panel panel-default">
             <div class="panel-heading">Dialogue</div>
             <div class="panel-body" id="chat">
+                <!-- <ul class="list-group">
+                </ul> -->
             </div>
         </div>
-
+ 
+        
         <!-- user query input container -->
         <div class="input-group">
             <input type="text" id="userInput" class="form-control" placeholder="Type your query here">
@@ -192,6 +200,9 @@
             }
 
             var myconfig_str = JSON.stringify(myconfig)
+            console.log("system_persona: " + system_persona)
+            console.log("userInput: " + userInput)
+            console.log("myconfig_str: " + myconfig_str)
 
             let dict = {
                 "system_persona":system_persona,
@@ -208,6 +219,8 @@
                     dataType: 'json',
                     success: function(data){
                         console.log(data.choices[0].message['content']);
+                        let total_tokens = data["usage"]["total_tokens"]
+                        $("#total-tokens").text(total_tokens)
                         $("#chat").append("<li class='list-group-item'><b>Learner:</b> " + userInput + "</li>");
                         let responses = data.choices
                         let n = data.choices.length
@@ -256,24 +269,29 @@
         $("#act-as-selector").bind("change", actAsChangeHandler)
 
         function reset_hyperparam_values(selected_index){
-            if (selected_index==1){
+            if (selected_index==1){               // 코드 생성자
                 $("#temperature_inputbox").val(0.2);
                 $("#topp_inputbox").val(0.1);
+                $("#n_inputbox").val(1);
+                $("#maxtoken_inputbox").val(1024); // 한글인 경우 영어에 비해 약 2배 정도 토큰이 더 많이 사용되므로 크게 설정
             }
-            else if (selected_index==2){
+            else if (selected_index==2){           // 주석 생성자
                 $("#temperature_inputbox").val(0.2);
                 $("#topp_inputbox").val(0.1);
+                $("#n_inputbox").val(1);
+                $("#maxtoken_inputbox").val(1024);   
             }
-            else if (selected_index==3){
+            else if (selected_index==3){           // 프로젝트 주제 제안자
                 $("#temperature_inputbox").val(1.2);
-                $("#topp_inputbox").val(1.0);
+                $("#topp_inputbox").val(0.9);
                 $("#n_inputbox").val(2);
+                $("#maxtoken_inputbox").val(1024);   
             }
-            else if (selected_index==4){
+            else if (selected_index==4){            // 학습 지원자
                 $("#temperature_inputbox").val(1.0);
                 $("#topp_inputbox").val(1.0);
                 $("#n_inputbox").val(1);
-                $("#maxtoken_inputbox").val(1024);  // 한글인 경우 영어에 비해 약 2배 정도 토큰이 더 많이 사용되므로 크게 설정
+                $("#maxtoken_inputbox").val(1024);   
             }
         }
         function set_system_content(current_index){
@@ -291,7 +309,7 @@
             }
             // tutor
             else if (current_index == 4){
-                return "Python learning tutor having great sense of humor, experties and advanced teaching skills. Learners can be motivated by your humorous and sound advice"
+                return "Python learning tutor having great sense of humor, experties and advanced teaching skills. Learners can be motivated by your humorous and sound advice based on teach skills."
             }
         }
     </script>
