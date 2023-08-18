@@ -40,7 +40,7 @@ def chat_complete_request(system_persona, userText, myHyperParams):
 
 @app.route("/")
 def index():
-    return render_template("index_1.html") # index.html should be located under "templates" folder 
+    return render_template("index.html") # index.html should be located under "templates" folder 
 
 @app.route("/post", methods=["POST"])
 def get_data_from_form():
