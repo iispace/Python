@@ -230,13 +230,9 @@
                         let responses = data.choices
                         let n = data.choices.length
                         $.each(responses, function(index, message){
-                            // $("#chat").append("<li class='list-group-item' id='chat-response'><b style='color: #66ffcc'>AI Response</b> [" + index + "] : "+  data.choices[index].message['content'] + "</li>");
-
                             let msg = data.choices[index].message['content'];
-                                
                             var response_container = $("<pre>").attr({"class":"list-group-item", "id":"chat-response"})
                             response_container.html("<b style='color: #66ffcc'>AI Response </b>[" + index + "] : " + msg )     
-                            // response_container.html("<b style='color: #66ffcc'>AI Response </b>[" + index + "] : " + "<code style='white-space: normal'>"+ msg + "</code>" )     
                             $("#chat").append(response_container);
                             });
                         $("#userInput").val("");
