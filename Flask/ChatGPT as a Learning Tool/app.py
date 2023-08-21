@@ -1,8 +1,5 @@
 """ 
-ToDO:
-
- 2023-08-18:I used a global variable named "messages" but this is not good practice and not thread safe. The global variable needs to be replaced with session variable.
-            The modification will be in progress soon.
+ChatGPT as a Learning Tool
 
 """
 # %%
