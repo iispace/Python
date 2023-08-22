@@ -37,21 +37,8 @@ def chat_complete_request(system_persona, userText, myHyperParams):
     
     print(f"parameters: {parameters}")
     # Create chat completion 
-    
-    try:
-        response = openai.ChatCompletion.create(**parameters)
-        # {"role": "assistant", "content": response.choices[0].message['content']}
-        # n >1 인 경우 모든 응답을 messages에 저장하도록 수정 20230818
-        for resp in response.choices:
-            message_item =  {"role": "assistant", "content": resp.message['content']}
-            # messages.append(message_item)
-            session['chat_history'].append(message_item)
-
-        total_tokens = response['usage']['total_tokens']
-        print(f"### Total_tokens in this chat session: {total_tokens} ###") 
-        return response
-    except openai.error.InvalidRequestError as e:
-        return e
+    response = openai.ChatCompletion.create(**parameters)
+    return response
 
 @app.route("/")
 def index():
@@ -65,11 +52,18 @@ def get_data_from_form():
     
     try:
         chat_response = chat_complete_request(system_persona, userText, myHyperParams)
+        for resp in chat_response.choices:
+            message_item =  {"role": "assistant", "content": resp.message['content']}
+            # messages.append(message_item)
+            session['chat_history'].append(message_item)
+
+        total_tokens = chat_response['usage']['total_tokens']
+        print(f"### Total_tokens in this chat session: {total_tokens} ###") 
         return chat_response
 
     except openai.error.InvalidRequestError as e:
         print("======= OPENAI ERROR OCCURRED ===========")  
-        err_msg = chat_response.args[0]
+        err_msg = e.args[0]
         err_code = 500
         print(f"error({err_code} {err_msg})")
         return jsonify({'error': err_msg}), err_code
