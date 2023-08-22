@@ -37,20 +37,21 @@ def chat_complete_request(system_persona, userText, myHyperParams):
     
     print(f"parameters: {parameters}")
     # Create chat completion 
+    
     try:
         response = openai.ChatCompletion.create(**parameters)
-    except Exception as e:
-        return e
-    
-    # {"role": "assistant", "content": response.choices[0].message['content']}
-    # n >1 인 경우 모든 응답을 messages에 저장 
-    for resp in response.choices:
-        message_item =  {"role": "assistant", "content": resp.message['content']}
-        session['chat_history'].append(message_item)
+        # {"role": "assistant", "content": response.choices[0].message['content']}
+        # n >1 인 경우 모든 응답을 messages에 저장하도록 수정 20230818
+        for resp in response.choices:
+            message_item =  {"role": "assistant", "content": resp.message['content']}
+            # messages.append(message_item)
+            session['chat_history'].append(message_item)
 
-    total_tokens = response['usage']['total_tokens']
-    print(f"### Total_tokens in this chat session: {total_tokens} ###") 
-    return response
+        total_tokens = response['usage']['total_tokens']
+        print(f"### Total_tokens in this chat session: {total_tokens} ###") 
+        return response
+    except openai.error.InvalidRequestError as e:
+        return e
 
 @app.route("/")
 def index():
@@ -62,16 +63,16 @@ def get_data_from_form():
     userText = request.json["userInput"]
     myHyperParams = request.json["hyperparams"]
     
-    chat_response = chat_complete_request(system_persona, userText, myHyperParams)
+    try:
+        chat_response = chat_complete_request(system_persona, userText, myHyperParams)
+        return chat_response
 
-    if type(chat_response == openai.error.InvalidRequestError):
+    except openai.error.InvalidRequestError as e:
         print("======= OPENAI ERROR OCCURRED ===========")  
         err_msg = chat_response.args[0]
         err_code = 500
-        print(f"error({err_code}): {err_msg}")
+        print(f"error({err_code} {err_msg})")
         return jsonify({'error': err_msg}), err_code
-    
-    return chat_response
     
 if __name__ == "__main__":
     app.run(debug=True)
