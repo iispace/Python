@@ -37,7 +37,10 @@ def chat_complete_request(system_persona, userText, myHyperParams):
     
     print(f"parameters: {parameters}")
     # Create chat completion 
-    response = openai.ChatCompletion.create(**parameters)
+    try:
+        response = openai.ChatCompletion.create(**parameters)
+    except Exception as e:
+        return e
     
     # {"role": "assistant", "content": response.choices[0].message['content']}
     # n >1 인 경우 모든 응답을 messages에 저장 
@@ -58,7 +61,16 @@ def get_data_from_form():
     system_persona = request.json["system_persona"]
     userText = request.json["userInput"]
     myHyperParams = request.json["hyperparams"]
+    
     chat_response = chat_complete_request(system_persona, userText, myHyperParams)
+
+    if type(chat_response == openai.error.InvalidRequestError):
+        print("======= OPENAI ERROR OCCURRED ===========")  
+        err_msg = chat_response.args[0]
+        err_code = 500
+        print(f"error({err_code}): {err_msg}")
+        return jsonify({'error': err_msg}), err_code
+    
     return chat_response
     
 if __name__ == "__main__":
