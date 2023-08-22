@@ -13,6 +13,7 @@
       FLASK_ENV=development
       FLASK_RUN_PORT={any available port number you may want e.g. 8000}
       FLASK_DEBUG=1</pre>
+      <p><code>FLASK_DEBUG=1</code> is for activation of debug mode. Set this flag to <code>0</code> if you want to deactivate debug mode.</p>
   8. In your project folder, create a file with the name you assigned for "FLASK_APP" in ".env" file.
      In this case, the file name is to be "app.py"
   9. Open the "app.py" file and do your own coding.
