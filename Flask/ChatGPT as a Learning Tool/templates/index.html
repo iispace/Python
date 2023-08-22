@@ -238,8 +238,10 @@
                         $("#userInput").val("");
                         },
                         error: function(xhr, status, error){
-                            if (xhr.status !== 200){
-                                alert("Server response code is not 200: " + xhr.status)
+                            var errorCode = xhr.status
+                            var errorMessage = JSON.parse(xhr.responseText).error;
+                            if (errorCode !== 200){
+                                alert(status + "(" + errorCode + ")" + "\n\n" + errorMessage)
                             }
                         }
                     });
