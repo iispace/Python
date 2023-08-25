@@ -42,6 +42,7 @@ def chat_complete_request(system_persona, userText, myHyperParams):
 
 @app.route("/")
 def index():
+    session.clear()
     return render_template("index_1.html") # index.html 파일은 "templates" 폴더 하위에 있어야 함.
 
 @app.route("/post", methods=["POST"])
