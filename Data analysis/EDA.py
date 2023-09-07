@@ -60,6 +60,8 @@ def transform_data(transformer_name: str, data: Sequence[float]): # data: pandas
     elif transformer_name == 'box_cox':
         transformed_data, lambda_value = stats.boxcox(data)
         return transformed_data
+    elif transformer_name == 'square_root':
+        return np.sqrt(data)
 
 def check_normality(groups: List[str], alpha: float, transformer:None) -> List[Dict]: # transformer: None or dict object having 'name' key and its value in string format. ex: {'name': 'log'}
     output = []
