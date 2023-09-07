@@ -150,4 +150,54 @@ for i, data in enumerate(transformed_data):
 
 boxplotting_allinone(transformed_groups, 'ScoreEval', figsize=(4,7))
 
+###############################################################
+# Custom function to histplot for multiple groups of data in one fig.
+###############################################################
+from typing import List
+import matplotlib.pyplot as plt 
+import matplotlib as mpl
+import seaborn as sns
+import matplotlib.font_manager as fm 
+
+# [(f.name, f.fname) for f in fm.fontManager.ttflist if 'Nanum' in f.name]
+plt.rc('font', family='NanumGothic') # 한글깨짐 해결
+mpl.rcParams['axes.unicode_minus'] = False  # 마이너스(-) 기호 깨짐 해결
+
+def histogram_allinone(transformed_groups: List, column_name: str, figsize=(6,8)):
+    nrows = len(transformed_groups)
+    fig = plt.figure(figsize=figsize )
+
+    for i, transform_group in enumerate(transformed_groups):
+        n = (i*2) + 1 
+        ax_title = fig.add_subplot(nrows, 1, i+1)
+        ax1 = fig.add_subplot(nrows, 2, n)
+        ax2 = fig.add_subplot(nrows, 2, n+1, sharey=ax1)
+
+        transformer_name = 'Original sample data'
+        if transform_group[0]['transformer'] is not None:
+            transformer_name = transform_group[0]['transformer'] + " transformed data"
+        
+        data1 = transform_group[0]
+        data2 = transform_group[1]
+
+        if i < 3:
+            sns.histplot(data1['data'], kde=True, ax=ax1)
+            sns.histplot(data2['data'], kde=True, ax=ax2)
+
+            ax1.set_xlabel([f"{data1['group']}"])
+            ax1.set_ylabel("Count")
+            ax_title.set_title(f"{transformer_name}") #data1.group: 코드생성 or Playground 
+            ax_title.set_xticks([])
+            ax_title.set_yticks([])
+
+            ax2.set_xlabel([f"{data2['group']}"])
+            ax2.set_ylabel("")
+
+    plt.tight_layout()
+    plt.show()
+
+###############################################################
+# histplotting for multiple groups of data in one fig.
+###############################################################
+histogram_allinone(transformed_groups, 'ScoreEval', figsize=(6,7))
 
