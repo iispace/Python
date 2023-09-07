@@ -26,7 +26,7 @@ for i, line in enumerate(data_lst):
     jsondata_list.append(data_dict)
 
 ###############################################################
-# convert the data to DataFrame object
+# convert the list of json data to DataFrame object
 ###############################################################
 df = pd.DataFrame(jsondata_list)
 df.drop(["AIActAs", "chat"], axis=1, inplace=True) # remove unneccessary columns
