@@ -98,7 +98,8 @@ Check_org_data = check_normality(groups, alpha, None) # return: a list of dict f
 
 
 ###############################################################
-# Apply two transformation techniques (log transformation, box-cox transformation)
+# Apply three different transformation techniques 
+# (log transformation, box-cox transformation, and squre-root transformation)
 # to improve level of normal distribution when the original data distribution 
 # is far from normal distribution
 ###############################################################
