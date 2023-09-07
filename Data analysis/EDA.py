@@ -25,6 +25,7 @@ for i, line in enumerate(data_lst):
     data_dict.update(line_dict)
     jsondata_list.append(data_dict)
 
+
 ###############################################################
 # convert the list of json data to DataFrame object
 ###############################################################
@@ -41,11 +42,15 @@ print(zero_rows)
 summary_ScoreEval = df.groupby('Category').agg({'ScoreEval': ['sum', 'mean', 'median']})
 display(summary_ScoreEval)
 
+
+
 ###############################################################
 # Split df into two different dataframes for comparison
 ###############################################################
 group1 = df[df['Category'] == '코드생성']['ScoreEval']    # pandas.core.series.Series
 group2 = df[df['Category'] == 'Playground']['ScoreEval']  # pandas.core.series.Series
+
+
 
 ###############################################################
 # Custom function to check distribution normality using Shapiro-Wilk test
@@ -113,14 +118,13 @@ transformers = [None, {'name': 'log'}, {'name': 'box_cox'}, {'name': 'square_roo
 transformed_groups = []
 test_tech = ['shapiro', 'normaltest']
 
-for tech in test_tech:
-    text = colored(f"[TEST TECH: {tech}]", 'green')
-    print(text)
-    for i,transformer in enumerate(transformers):
-       # return: a list of dict formatted with {"transformer":str,"group": str, "data": pd.Series, "stat": float, "p-value": float}
+for i,transformer in enumerate(transformers):
+    for tech in test_tech:
+        text = colored(f"[TEST TECH: {tech}]", 'green')
+        print(text)
+        # return: a list of dict formatted with {"transformer":str,"group": str, "data": pd.Series, "stat": float, "p-value": float}
         transformed_data = check_normality(tech, groups, alpha, transformer) 
-        transformed_groups.append(transformed_data)
-    print()
+    transformed_groups.append(transformed_data)
 
 
 
