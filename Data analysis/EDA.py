@@ -42,7 +42,7 @@ summary_ScoreEval = df.groupby('Category').agg({'ScoreEval': ['sum', 'mean', 'me
 display(summary_ScoreEval)
 
 ###############################################################
-# Split df into two different dataframe for comparison
+# Split df into two different dataframes for comparison
 ###############################################################
 group1 = df[df['Category'] == '코드생성']['ScoreEval']    # pandas.core.series.Series
 group2 = df[df['Category'] == 'Playground']['ScoreEval']  # pandas.core.series.Series
