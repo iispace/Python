@@ -183,18 +183,17 @@ def histogram_allinone(transformed_groups: List, column_name: str, figsize=(6,8)
         data1 = transform_group[0]
         data2 = transform_group[1]
 
-        if i < 3:
-            sns.histplot(data1['data'], kde=True, ax=ax1)
-            sns.histplot(data2['data'], kde=True, ax=ax2)
+        sns.histplot(data1['data'], kde=True, ax=ax1)
+        sns.histplot(data2['data'], kde=True, ax=ax2)
 
-            ax1.set_xlabel([f"{data1['group']}"])
-            ax1.set_ylabel("Count")
-            ax_title.set_title(f"{transformer_name}") #data1.group: 코드생성 or Playground 
-            ax_title.set_xticks([])
-            ax_title.set_yticks([])
+        ax1.set_xlabel([f"{data1['group']}"])
+        ax1.set_ylabel("Count")
+        ax_title.set_title(f"{transformer_name}") #data1.group: 코드생성 or Playground 
+        ax_title.set_xticks([])
+        ax_title.set_yticks([])
 
-            ax2.set_xlabel([f"{data2['group']}"])
-            ax2.set_ylabel("")
+        ax2.set_xlabel([f"{data2['group']}"])
+        ax2.set_ylabel("")
 
     plt.tight_layout()
     plt.show()
