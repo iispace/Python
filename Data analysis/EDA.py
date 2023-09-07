@@ -53,6 +53,7 @@ group2 = df[df['Category'] == 'Playground']['ScoreEval']  # pandas.core.series.S
 import scipy.stats as stats
 import numpy as np
 from typing import Sequence, List
+from termcolor import colored
 
 def transform_data(transformer_name: str, data: Sequence[float]): # data: pandas.Series
     if transformer_name == 'log':
@@ -63,15 +64,20 @@ def transform_data(transformer_name: str, data: Sequence[float]): # data: pandas
     elif transformer_name == 'square_root':
         return np.sqrt(data)
 
-def check_normality(groups: List[str], alpha: float, transformer:None) -> List[Dict]: # transformer: None or dict object having 'name' key and its value in string format. ex: {'name': 'log'}
+def check_normality(option: str, groups: List[str], alpha: float, transformer:None) -> List[Dict]: 
+    # option: 'shapiro', 'normaltest'
     output = []
     transformer_name = "None"
     for group in groups:
+        stat, p = 0.0, 0.0
         data = df[df['Category'] == group]['ScoreEval']
         if transformer is not None:
             transformer_name = transformer['name']
             data = transform_data(transformer_name, data)
-        stat, p = stats.shapiro(data)
+        if option == 'shapiro':
+            stat, p = stats.shapiro(data)
+        elif option == 'normaltest':
+            stat, p = stats.normaltest(data)
         output.append({"transformer":f"{transformer_name}","group": group,"data": data, "stat": stat, "p-value": p})
 
         print(f"Data tranformation: {transformer_name}\n")
@@ -81,7 +87,8 @@ def check_normality(groups: List[str], alpha: float, transformer:None) -> List[D
         print("{:.10f}".format(p), ")")
 
         if p > alpha:
-            print("The data appears to be normaliy distributed.")
+            text = colored("The data appears to be normaliy distributed.", 'yellow')
+            print(text)
         else:
             print("The data does NOT appear to be normaliy distributed.")
         print("="*120)
@@ -89,32 +96,31 @@ def check_normality(groups: List[str], alpha: float, transformer:None) -> List[D
     return output
 
 
-
 ###############################################################
-# Check distribution normality by calling "check_normality()" function
-###############################################################
-groups = df['Category'].unique()
-alpha = 0.05
-
-Check_org_data = check_normality(groups, alpha, None) # return: a list of dict formatted with {"transformer":str,"group": str, "data": pd.Series, "stat": float, "p-value": float}
-
-
-###############################################################
+# Check distribution normality using two different methods, that are 
+# shapiro-wilk test and normaltest using skewness and kurtosis.
 # Apply three different transformation techniques 
 # (log transformation, box-cox transformation, and squre-root transformation)
 # to improve level of normal distribution when the original data distribution 
 # is far from normal distribution
 ###############################################################
+from termcolor import colored
+
 alpha = 0.05
 groups = df['Category'].unique()
 
 transformers = [None, {'name': 'log'}, {'name': 'box_cox'}, {'name': 'square_root'}]
 transformed_groups = []
+test_tech = ['shapiro', 'normaltest']
 
-for i,transformer in enumerate(transformers):
-    # return: a list of dict formatted with {"transformer":str,"group": str, "data": pd.Series, "stat": float, "p-value": float}
-    transformed_data = check_normality(groups, alpha, transformer) 
-    transformed_groups.append(transformed_data)
+for tech in test_tech:
+    text = colored(f"[TEST TECH: {tech}]", 'green')
+    print(text)
+    for i,transformer in enumerate(transformers):
+       # return: a list of dict formatted with {"transformer":str,"group": str, "data": pd.Series, "stat": float, "p-value": float}
+        transformed_data = check_normality(tech, groups, alpha, transformer) 
+        transformed_groups.append(transformed_data)
+    print()
 
 
 
