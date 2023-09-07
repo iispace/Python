@@ -2,11 +2,11 @@ import json
 import pandas as pd
 
 ###############################################################
-# Read data from a json formatted text file
+# Read data from text file in which each line of text is formatted as json structure, 
+# that are (key, value) pairs enclosed with curly bracket.
 ###############################################################
 test_file = r"experiment_log.json"
 
-# read data from textfile in which each line of text is formatted as json structure. i.e., key, value pair enclosed with curly bracket.
 data_lst = []
 with open(test_file, "r") as file:
     for line in file:
