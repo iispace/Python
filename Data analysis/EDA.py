@@ -86,6 +86,8 @@ def check_normality(groups: List[str], alpha: float, transformer:None) -> List[D
     
     return output
 
+
+
 ###############################################################
 # Check distribution normality by calling "check_normality()" function
 ###############################################################
@@ -94,16 +96,23 @@ alpha = 0.05
 
 Check_org_data = check_normality(groups, alpha, None) # return: a list of dict formatted with {"transformer":str,"group": str, "data": pd.Series, "stat": float, "p-value": float}
 
+
 ###############################################################
 # Apply two transformation techniques (log transformation, box-cox transformation)
 # to improve level of normal distribution when the original data distribution 
 # is far from normal distribution
 ###############################################################
-transformer = {'name': 'log'}
-check_log_data = check_normality(groups, alpha, transformer)
+alpha = 0.05
+groups = df['Category'].unique()
 
-transformer = {'name': 'box_cox'}
-check_boxcox_data = check_normality(groups, alpha, transformer)
+transformers = [None, {'name': 'log'}, {'name': 'box_cox'}, {'name': 'square_root'}]
+transformed_groups = []
+
+for i,transformer in enumerate(transformers):
+    # return: a list of dict formatted with {"transformer":str,"group": str, "data": pd.Series, "stat": float, "p-value": float}
+    transformed_data = check_normality(groups, alpha, transformer) 
+    transformed_groups.append(transformed_data)
+
 
 
 ###############################################################
@@ -140,18 +149,13 @@ def boxplotting_allinone(transformed_groups: List, column_name: str, figsize=(6,
     plt.tight_layout()
     plt.show()
 
+
 ###############################################################
 # boxplotting for multiple groups of data in one fig.
 ###############################################################
-org_dict, log_dict, boxcox_dict = [], [], []
-transformed_groups = [org_dict, log_dict, boxcox_dict]
-transformed_data = [check_org_data, check_log_data, check_boxcox_data]
-
-for i, data in enumerate(transformed_data):
-    for j in range(2):
-        transformed_groups[i].append({"transformer":transformed_data[i][j]['transformer'], "group": transformed_data[i][j]['group'], "data": transformed_data[i][j]['data']})
-
 boxplotting_allinone(transformed_groups, 'ScoreEval', figsize=(4,7))
+
+
 
 ###############################################################
 # Custom function to histplot for multiple groups of data in one fig.
