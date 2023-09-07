@@ -14,16 +14,16 @@ with open(test_file, "r") as file:
 
 jsondata_list = []
 for i, line in enumerate(data_lst):
-    new_dict = {}
+    data_dict = {}
     line_dict = json.loads(line)
     AIActAs = line_dict['AIActAs'].replace(" ", "").replace("setting","")
     mok = i // 2
     seq = f'Q{mok+1}' 
     
-    new_dict.update({"TestID": seq})
-    new_dict.update({"Category": AIActAs})
-    new_dict.update(line_dict)
-    jsondata_list.append(new_dict)
+    data_dict.update({"TestID": seq})
+    data_dict.update({"Category": AIActAs})
+    data_dict.update(line_dict)
+    jsondata_list.append(data_dict)
 
 ###############################################################
 # convert the data to DataFrame object
