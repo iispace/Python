@@ -142,7 +142,7 @@ def boxplotting_allinone(transformed_groups: List, column_name: str, figsize=(6,
 ###############################################################
 org_dict, log_dict, boxcox_dict = [], [], []
 transformed_groups = [org_dict, log_dict, boxcox_dict]
-transformed_data = [check_source_data, check_log_data, check_boxcox_data]
+transformed_data = [check_org_data, check_log_data, check_boxcox_data]
 
 for i, data in enumerate(transformed_data):
     for j in range(2):
