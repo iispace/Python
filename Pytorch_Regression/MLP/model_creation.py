@@ -1,5 +1,5 @@
 from JJ_train_logger import load_model_architecture
-
+ 
 feature_n = X_train_ts.shape[1]
 output_n = y_train_ts.shape[1] 
 
