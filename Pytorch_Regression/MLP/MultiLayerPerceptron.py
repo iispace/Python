@@ -1,6 +1,6 @@
 import torch, tqdm, math
 import torch.nn as nn, torch.optim as optim, torch.cuda as cuda
-from torch.nn import Module
+from torch.nn import Module 
 
 class MLP(nn.Module):
   def __init__(self, input_size, layers: list, optimizer_config, dropout_p):
