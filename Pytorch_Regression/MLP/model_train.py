@@ -1,4 +1,4 @@
-# 모델 학습
+# 모델 학습 
 
 n_epochs = 3000   # number of epochs to run
 batch_size = 50  # size of each batch 
