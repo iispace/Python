@@ -12,7 +12,7 @@ class MLP(nn.Module):
 
     for size, activation in layers:
       self.layers.append(nn.Linear(input_size, size))
-      self.layers.append(nn.BatchNorm1d(size))
+      self.layers.append(nn.BatchNorm1d(size)) 
 
       input_size = size # for next layer
 
