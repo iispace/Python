@@ -101,6 +101,10 @@ from PIL import Image
 
 #########################################################################################################################
 
+from typing import Any, Callable, Optional, Tuple, Union
+import pickle 
+from PIL import Image 
+
 class OrangeQualityDataset2(Dataset):
     def __init__(self, root_dir: str, train=True, transform=None, target_transform=None):
         """ 
@@ -114,19 +118,25 @@ class OrangeQualityDataset2(Dataset):
         self.classes = [1.0, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0]
         self.file_paths = self._get_file_path()
         self.data:Any = []
-        self.label = []
+        self.labels = []
         self.targets = []
+        self.sample_ids = []
 
         for i, file_path in enumerate(self.file_paths):
             label = float(os.path.dirname(file_path).split("\\")[-1])
+            basename = int(os.path.basename(file_path).split('.')[0]) # file name is the sample_id
             img = io.read_image(file_path)            # torchvision.transforms.io.read_image() returns 3D Tensor[C, H, W]
             img_permute = torch.permute(img, (1,2,0)) # convert structure from [C, H, W] to [H, W, C]
             img_BGR = img_permute.numpy().astype('uint8') # Tensor to Numpy array with dtype('uint8')
+            #img_RGB = img_BGR[..., [2,1,0]]          # for torch.tensor object
             img_RGB = img_BGR[...,::-1]               # Color convert from BGR to RGB (numpy.ndarray: [H,W,C])
             self.data.append(img_RGB)                 # self.data: list of numpy.ndarray
-            self.label.append(label)
+            self.labels.append(label)
             target = self.classes.index(label)
             self.targets.append(target)
+            self.sample_ids.append(basename)
+
+        self.img_size = self.data[0].shape[0]
 
     def __len__(self) -> int:
         return len(self.data)
@@ -139,7 +149,7 @@ class OrangeQualityDataset2(Dataset):
             - tuple: (image, target) where target is index of the target class
         """
         img = self.data[index]  # numpy.ndarray
-        target = self.classes.index(self.label[index])
+        target = self.classes.index(self.labels[index])
 
         # doing this so that it is consistent with all other datasets to return a PIL Image
         img = Image.fromarray(img) 
@@ -187,8 +197,3 @@ class OrangeQualityDataset2(Dataset):
         return df    
 
 
-
-         
-        return sample
-
-        
