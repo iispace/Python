@@ -1,3 +1,22 @@
+"""
+Image File Structure
+
+D:\Image\OrangeQuality\train\
+|------------|-----------|--------|              
+1.0          2.0        3.0      4.0
+ |           |           |        |
+ 5.png      18.png     41.png    3.png
+28.png      23.png     29.png    16.png
+ 
+D:\Image\OrangeQuality\test\
+|------------|-----------|--------|              
+1.0          2.0        3.0      4.0
+ |           |           |        |
+15.png      8.png     2.png    11.png
+8.png      31.png     19.png   26.png.
+"""
+
+
 IMAGE_ROOT = rf"D:\Image\OrangeQuality"
 train_root = os.path.join(IMAGE_ROOT, "train")
 test_root  = os.path.join(IMAGE_ROOT, "test")
