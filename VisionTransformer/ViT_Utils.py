@@ -13,4 +13,4 @@ class PatchGenerator:
         patches = patches.permute(1,0,2,3)  # [C, N, p, p] to [N, C, p, p]
         num_patch = patches.size(0)
 
-        return patches.reshape(num_patch, -1)
+        return patches.reshape(num_patch, -1)  # [N, C*p*p]
