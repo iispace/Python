@@ -1,9 +1,9 @@
 import torch.nn as nn 
 
 ########## ViT Classification Model ##########
-class LinearProjection(nn.Module):
+class LinearProjection_cls(nn.Module):
     def __init__(self, patch_vec_size, num_patches, latent_vec_dim, drop_rate):
-        super(LinearProjection, self).__init__()
+        super(LinearProjection_cls, self).__init__()
         self.linear_proj   = nn.Linear(patch_vec_size, latent_vec_dim)
         self.cls_token     = nn.Parameter(torch.randn(1, latent_vec_dim))
         self.pos_embedding = nn.Parameter(torch.randn(1, num_patches+1, latent_vec_dim))
@@ -18,9 +18,9 @@ class LinearProjection(nn.Module):
         x = self.dropout(x)
         return x 
     
-class MultiHeadSelfAttention(nn.Module):
+class MultiHeadSelfAttention_cls(nn.Module):
     def __init__(self, latent_vec_dim, num_heads, drop_rate) :
-        super(MultiHeadSelfAttention, self).__init__()
+        super(MultiHeadSelfAttention_cls, self).__init__()
         device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         self.num_heads = num_heads 
         self.latent_vec_dim = latent_vec_dim 
@@ -46,12 +46,12 @@ class MultiHeadSelfAttention(nn.Module):
 
         return x, attention
     
-class TFencoder(nn.Module):
+class TFencoder_cls(nn.Module):
     def __init__(self, latent_vec_dim, num_heads, mlp_hidden_dim, drop_rate):
-        super(TFencoder, self).__init__()
+        super(TFencoder_cls, self).__init__()
         self.ln1 = nn.LayerNorm(latent_vec_dim)
         self.ln2 = nn.LayerNorm(latent_vec_dim)
-        self.msa = MultiHeadSelfAttention(latent_vec_dim=latent_vec_dim, num_heads=num_heads, drop_rate=drop_rate)
+        self.msa = MultiHeadSelfAttention_cls(latent_vec_dim=latent_vec_dim, num_heads=num_heads, drop_rate=drop_rate)
         self.dropout = nn.Dropout(drop_rate)
         self.mlp = nn.Sequential(nn.Linear(latent_vec_dim, mlp_hidden_dim),
                                  nn.GELU(), nn.Dropout(drop_rate),
@@ -67,12 +67,12 @@ class TFencoder(nn.Module):
         x = x + z
         return x, att_map 
     
-class VisionTransformer(nn.Module):
+class VisionTransformer_cls(nn.Module):
     def __init__(self, patch_vec_size, num_patches, latent_vec_dim, num_heads, mlp_hidden_dim, drop_rate, num_layers, num_classes) :
-        super(VisionTransformer, self).__init__()
-        self.patchembedding = LinearProjection(patch_vec_size=patch_vec_size, num_patches=num_patches,
+        super(VisionTransformer_cls, self).__init__()
+        self.patchembedding = LinearProjection_cls(patch_vec_size=patch_vec_size, num_patches=num_patches,
                                                latent_vec_dim=latent_vec_dim, drop_rate=drop_rate)
-        self.transformer    = nn.ModuleList([TFencoder(latent_vec_dim=latent_vec_dim, num_heads=num_heads,
+        self.transformer    = nn.ModuleList([TFencoder_cls(latent_vec_dim=latent_vec_dim, num_heads=num_heads,
                                                             mlp_hidden_dim=mlp_hidden_dim, drop_rate=drop_rate)
                                             for _ in range(num_layers)])
         self.mlp_head = nn.Sequential(nn.LayerNorm(latent_vec_dim), nn.Linear(latent_vec_dim, num_classes))
@@ -93,9 +93,9 @@ class VisionTransformer(nn.Module):
 
 
 ########## ViT Regression Model ##########
-class LinearProjection(nn.Module):
+class LinearProjection_reg(nn.Module):
     def __init__(self, patch_vec_size, num_patches, latent_vec_dim, drop_rate):
-        super(LinearProjection, self).__init__()
+        super(LinearProjection_reg, self).__init__()
         self.linear_proj   = nn.Linear(patch_vec_size, latent_vec_dim) # output: [Batch_size, N, latent_vec_dim]
         self.cls_token     = nn.Parameter(torch.randn(1, latent_vec_dim)) # Returns a tensor filled with random numbers from a normal distribution with mean 0 and variance 1
         self.pos_embedding = nn.Parameter(torch.randn(1, num_patches+1, latent_vec_dim))
@@ -113,9 +113,9 @@ class LinearProjection(nn.Module):
         x = self.dropout(x)
         return x 
     
-class MultiHeadSelfAttention(nn.Module):
+class MultiHeadSelfAttention_reg(nn.Module):
     def __init__(self, latent_vec_dim, num_heads, drop_rate) :
-        super(MultiHeadSelfAttention, self).__init__()
+        super(MultiHeadSelfAttention_reg, self).__init__()
         device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         self.num_heads = num_heads # k
         self.latent_vec_dim = latent_vec_dim # D
@@ -145,12 +145,12 @@ class MultiHeadSelfAttention(nn.Module):
 
         return x, attention_map
     
-class TFencoder(nn.Module):
+class TFencoder_reg(nn.Module):
     def __init__(self, latent_vec_dim, num_heads, mlp_hidden_dim, drop_rate):
-        super(TFencoder, self).__init__()
+        super(TFencoder_reg, self).__init__()
         self.ln1 = nn.LayerNorm(latent_vec_dim)
         self.ln2 = nn.LayerNorm(latent_vec_dim)
-        self.msa = MultiHeadSelfAttention(latent_vec_dim=latent_vec_dim, num_heads=num_heads, drop_rate=drop_rate)
+        self.msa = MultiHeadSelfAttention_reg(latent_vec_dim=latent_vec_dim, num_heads=num_heads, drop_rate=drop_rate)
         self.dropout = nn.Dropout(drop_rate)
         self.mlp = nn.Sequential(nn.Linear(latent_vec_dim, mlp_hidden_dim),
                                  nn.GELU(), nn.Dropout(drop_rate),
@@ -166,12 +166,12 @@ class TFencoder(nn.Module):
         x = x + z
         return x, att_map 
     
-class VisionTransformer(nn.Module):
+class VisionTransformer_reg(nn.Module):
     def __init__(self, patch_vec_size, num_patches, latent_vec_dim, num_heads, mlp_hidden_dim, drop_rate, num_layers, num_classes=None) :
-        super(VisionTransformer, self).__init__()
-        self.patchembedding = LinearProjection(patch_vec_size=patch_vec_size, num_patches=num_patches,
+        super(VisionTransformer_reg, self).__init__()
+        self.patchembedding = LinearProjection_reg(patch_vec_size=patch_vec_size, num_patches=num_patches,
                                                latent_vec_dim=latent_vec_dim, drop_rate=drop_rate)
-        self.transformer    = nn.ModuleList([TFencoder(latent_vec_dim=latent_vec_dim, num_heads=num_heads, mlp_hidden_dim=mlp_hidden_dim, drop_rate=drop_rate)
+        self.transformer    = nn.ModuleList([TFencoder_reg(latent_vec_dim=latent_vec_dim, num_heads=num_heads, mlp_hidden_dim=mlp_hidden_dim, drop_rate=drop_rate)
                                             for _ in range(num_layers)])
         
         # regression task를 위해 mlp_head 부분을 fc로 수정
