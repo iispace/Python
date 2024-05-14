@@ -1,7 +1,10 @@
 # 테이블형 데이터셋의 이미지화 기법 
  
- 
+### 데이터 로드
+
 1. csv 파일 형태의 Dataset 읽어서 dataframe에 저장
+
+### 데이터 전처리
    
 2. Target column의 자료형에 따라 분류문제인지 회귀문제인지 확인하고, 자료형에 따라 dataframe 나누기<br>
     nom_cols = [...]<br>
@@ -19,6 +22,8 @@
        3.2.2 회귀 Dataset: Target Encoding (Mean Encoding)<br>
    
 4. 수치형으로 변환된 nom_df, ord_df, num_df 를 하나의 df로 concat한 후 train-test split => train_X_df, test_X_df
+
+### 이미지화 준비
    
 5. 3채널 이미지화를 위한 채널별 행렬 생성 
    
@@ -49,7 +54,7 @@
          train_X_dfs_CH2 = [train_nom_df_CH2, train_ord_df_CH2, train_nom_df_CH2]     
          test_X_dfs_CH2 = [test_nom_df_CH2, test_ord_df_CH2, test_nom_df_CH2]    
 
-9. 각 채널마다 train set과 test set에 대한 상관계수 행렬 생성
+6. 각 채널마다 train set과 test set에 대한 상관계수 행렬 생성
     
    6-1. For channel 0
    
@@ -67,7 +72,7 @@
         test_corr_dict_CH2  = Correlations(test_X_dfs_CH2,  test_df_label)
    
 
-11. 이미지 변환
+### 이미지 변환
     
   7-1. train set 채널별 이미지 행렬 생성
   
@@ -105,7 +110,7 @@
     test_chns = [test_ch0_images, test_ch1_images, test_ch2_images]
     test_3d_images =  To3DImage(test_chns, padding=1) 
   
-10. 3D 이미지로 변환된 샘플 시각화
+9. 3D 이미지로 변환된 샘플 시각화
     
   ![image](https://github.com/iispace/Python/assets/24539773/d3ffb32c-5bce-4e8f-9760-a5849a366da0)
 
