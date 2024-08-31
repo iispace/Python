@@ -202,19 +202,31 @@ def check_model_save_func(args_dict):
     output_dict['save_acc'] = args_dict['save_acc']
     
     IsConditionMet = False
-    if 1 in conditions:
-        if args_dict['curr_acc_diff'] <= 0.2 and test_r2 > best_acc_test and train_r2 > best_acc_train:
+    if "train_r2" in conditions:
+        if train_r2 > best_acc_train and test_r2 > 0:
             IsConditionMet = True
-    if 2 in conditions:
-        if args_dict['train_r2'] >= 0.5 and test_r2 >=0.49:
+    elif "train_test_r2" in conditions:
+        if train_r2 > best_acc_train and test_r2 > best_acc_test:
             IsConditionMet = True
+    elif "train_test_balance_r2" in conditions:
+        if train_r2 > best_acc_train and test_r2 > 0 and args_dict['curr_acc_diff'] <= 0.5:
+            IsConditionMet = True
+    elif 1 in conditions:
+        if args_dict['curr_acc_diff'] <= 0.2:
+            IsConditionMet = True
+    #if 2 in conditions:
+    #    if args_dict['train_r2'] >= 0.5 and test_r2 >=0.49:
+    #        IsConditionMet = True
        
     
     if IsConditionMet:
         model = args_dict['model']
         output_dict['best_model_weights'] = copy.deepcopy(model.state_dict())
+        save_path = rf".\trained_models\{data_name}\{arch_id}"
+        mcm_utils.create_folder(save_path, recreate=False)
+        
         if test_r2 > save_acc:
-            torch.save(model.state_dict(), rf".\trained_models\{data_name}\{arch_id}\{model_name}_Best_Model_{train_r2:.2f}_{test_r2:.2f}.pth")
+            torch.save(model.state_dict(), rf".\trained_models\{data_name}\{arch_id}\{model_name}_Best_Model_{epoch:>06}_{train_r2:.2f}_{test_r2:.2f}.pth")
             output_dict['save_acc'] = test_r2 
             print(f"<==== model saved!!")
             
