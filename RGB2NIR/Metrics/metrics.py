@@ -1,4 +1,5 @@
 import torch
+import torch.nn.functional as F
 from torcheval.metrics import PeakSignalNoiseRatio, FrechetInceptionDistance
 
 from torchmetrics.functional import structural_similarity_index_measure as ssim
@@ -29,3 +30,21 @@ def calculate_fid_and_psnr(fake_imgs, real_imgs):
   print(f"PSNR: {psnr_score:.2f}\n")  # 값이 클수록 우수
   
   return {"fid" fid_distance, "psnr": psnr}
+
+
+def calculate_ndvi(rgb_imgs, real_nirs, fake_nirs):
+    real_nir_channels = real_nirs[:, 0]
+    fake_nir_channels = fake_nirs[:, 0]
+    rgb_red_channels = rgb_imgs[:, 0]
+    
+    eps = 1e-6
+    real_ndvi = (real_nir_channels - rgb_red_channels) / (real_nir_channels + rgb_red_channels + eps) 
+    fake_ndvi = (fake_nir_channels - rgb_red_channels) / (fake_nir_channels + rgb_red_channels + eps) 
+    
+    print(f"real_ndvi.shape: {real_ndvi.shape}")
+    print(f"fake_ndvi.shape: {fake_ndvi.shape}")
+    
+    ndvi_mse = F.mse_loss(real_ndvi, fake_ndvi)  # 값이 작을수록 우수
+    print(f"\nndvi_mse : {ndvi_mse.item():.2f}")
+
+    return ndvi_mse
