@@ -202,3 +202,12 @@ class Discriminator(nn.Module):
         x = torch.sigmoid(x)    # torch.Size([B, 1, 16, 16])    <= torch.sigmoid()는 입력 tensor의 shape와 같은 shape의 tensor 출력
         return x
 
+##############################################################################################
+# 가중치 초기화
+def initialize_weights(model):
+    class_name = model.__class__.__name__
+    if class_name.find('Conv') != -1:
+        nn.init.normal_(model.weight.data, 0.0, 0.01)
+        
+
+
