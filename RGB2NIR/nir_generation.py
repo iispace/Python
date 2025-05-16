@@ -202,7 +202,7 @@ test_dl = DataLoader(test_ds, batch_size=60, shuffle=False)          # test_set�
 
 ##### test set 전체 이미지에 대한 모델 평가 #####
 import torch.nn.functional as F
-from Metrics.metrics import calculate_ssim_scores,   # ssim
+from Metrics.metrics import calculate_ssim_scores,  calculcate_fid_and_psnr, calculate_ndvi 
 
 # evaluation model
 model_gen.eval()
@@ -221,3 +221,10 @@ with torch.no_grad():
         else:
             input_imgs = color_space_transformer(test_rgbs)
         test_fake_nirs = model_gen(input_imgs.to(device)).detach().cpu()  # 3채널 이미지 반환 
+
+        mse = F.mse_loss(test_fake_nirs, test_nirs)
+        fid_and_psnr = calculate_fid_and_psnr(test_fake_nirs, test_nirs)
+        fid_distance = fid_and_psnr["fid"]
+        psnr_score   = fid_and_psnr["psrn"]
+
+        ndvi_mse = calculate_ndvi(test_rgbs, test_nirs, test_fake_nirs)
