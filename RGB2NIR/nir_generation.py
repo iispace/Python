@@ -17,6 +17,7 @@ import torchvision.transforms as transforms
 from torchvision.transforms.functional import to_pil_image
 from Models import RGB_NIR_Dataset
 from Models.RGB_NIR_Dataset import dataloader_info, dataset_info
+from color_space.convert import *
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -24,6 +25,46 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 # 실험 번호 부여
 experiment_no = 4   # <= argument로 전달할 값
 
+from Research_Utils.color_space_transforms import *
+
+transform_basic = transforms.Compose([
+    transforms.ToTensor(), 
+    transforms.Resize((256,256)),
+])
+
+transform_Norm = transforms.Compose([
+    transforms.ToTensor(), 
+    transforms.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5]),
+    transforms.Resize((256,256)),
+])
+
+transform_to_YCbCr = transforms.Compose([
+    # dataloader에서 가져올 때 이미 tensor로 변환되었으므로, 여기서는 색 공간 변환만 처리함.
+    RGB2YCbCr_Transform(BT="2020"),  # 사용자 정의 변환기 추가
+])
+
+transform_to_Lab = transforms.Compose([
+    RGB2LAB_Transform(),
+])
+
+transform_to_Yuv = transforms.Compose([
+    RGB2YUV_Transform(),
+])
+transform_to_xyz = transforms.Compose([
+    RGB2XYZ_Transform(),
+])
+
+transform_to_ycbcr_kornia = transforms.Compose([
+    RGB2YCbCr_kornia_Transform(),
+])
+
+transform_to_gray = transforms.Compose([
+    RGB2Gray_Transform(),
+])
+
+transform_to_lch = transforms.Compose([
+    RGB2LCH_Transform(),
+])
 
 # ds, dl 생성
 train_img_dir = r".\Datasets\RGB2NIR\train"
@@ -82,7 +123,7 @@ start_time = time.time()
 loss_hist = {'gen':[],
              'dis':[]}
 
-# 적용할 color_space 선택  # <==== argument로 받아서 처리할 수 있도록 수정할 부분
+# 적용할 color_space 선택          # <==== argument로 받아서 처리할 수 있도록 수정할 부분
 #color_space_transformer = None
 #color_space_transformer = RGB2LAB_Transform()
 #color_space_transformer = RGB2LCH_Transform()  
@@ -154,3 +195,29 @@ for epoch in range(num_epochs):
 print(f"\ncolor_space_transformer: {color_space_transformer.__class__.__name__}")
 
 
+print(f"test_img_dir: {test_img_dir}")
+#test_ds = RGB_NIR_Dataset(test_img_dir, transform=transform_basic)  # 위에서 train_ds 만들 때 test_ds도 함께 만들었으므로 다시 만들지 않아도 됨.
+test_dl = DataLoader(test_ds, batch_size=60, shuffle=False)          # test_set에 있는 이미지의 개수가 60개이므로, batch_size=60을 주어서 모두 가져오게 함.
+
+
+##### test set 전체 이미지에 대한 모델 평가 #####
+import torch.nn.functional as F
+from Metrics.metrics import calculate_ssim_scores,   # ssim
+
+# evaluation model
+model_gen.eval()
+
+print(f"===== color space: {color_space} =====\n")
+
+# 가짜 이미지 생성
+with torch.no_grad():
+    for test_rgbs, test_nirs, indices in test_dl:
+        print(f"test_dl.index: {indices}\n")
+        print(f"test_rgbs.shape: {test_rgbs.shape}")  # torch.Size([32, 3, 256, 256])
+        print(f"test_nirs.shape: {test_nirs.shape}")
+        
+        if color_space_transformer is None:
+            input_imgs = test_rgbs   # 기본 transform만 적용된 이미지
+        else:
+            input_imgs = color_space_transformer(test_rgbs)
+        test_fake_nirs = model_gen(input_imgs.to(device)).detach().cpu()  # 3채널 이미지 반환 
