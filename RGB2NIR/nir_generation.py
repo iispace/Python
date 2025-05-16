@@ -209,7 +209,7 @@ model_gen.eval()
 
 print(f"===== color space: {color_space} =====\n")
 
-# 가짜 이미지 생성
+# 가짜 이미지 생성해서 진짜 이미지와의 차이 측정
 with torch.no_grad():
     for test_rgbs, test_nirs, indices in test_dl:
         print(f"test_dl.index: {indices}\n")
@@ -228,3 +228,55 @@ with torch.no_grad():
         psnr_score   = fid_and_psnr["psrn"]
 
         ndvi_mse = calculate_ndvi(test_rgbs, test_nirs, test_fake_nirs)
+
+## 측정값 파일에 기록 ##
+now = datetime.now()
+print(now)
+ndvi_result_log = {'date_time': str(now),
+              'color_space': color_space,
+              'test_mse' : test_mse.item(),
+              'test_PSNR': psnr_score,
+              'test_SSIM': avg_ssim.item(),
+              'test_FID' : fid_distance.item(),
+              'test_ndvi_mse': test_ndvi_mse.item()}
+
+ndvi_log_file_path = rf".\RGB2NIR_models\실험No_{experiment_no}\ndvi_result_log.txt"
+
+with open(ndvi_log_file_path, "a") as file:
+    file.write(json.dumps(ndvi_result_log))
+    file.write("\n")
+
+print(f"real_ndvi.min(): {real_ndvi.min():.2f}\treal_ndvi.max(): {real_ndvi.max():.2f}")
+print(f"fake_ndvi.min(): {fake_ndvi.min():.2f}\tfake_ndvi.max(): {fake_ndvi.max():.2f}")
+
+## RGB, NIR, fake_NIR 이미지를 한 줄에 시각화하는 fig 생성 및 파일로 저장 ##
+rows, cols = 5, 3
+fig, ax = plt.subplots(rows, cols, figsize=(6,10))
+
+ndvi_pairs = []
+for i in range(rows):
+    r_rgb = test_rgbs[i]
+    r_ndvi = real_ndvi[i]
+    f_ndvi = fake_ndvi[i]
+    ndvi_pairs.append((r_rgb, r_ndvi, f_ndvi))
+    
+for i in range(rows):
+    ax[i][0].imshow(ndvi_pairs[i][0].permute(1,2,0), aspect="auto")
+    ax[i][0].axis('off')
+    
+    ax[i][1].imshow(ndvi_pairs[i][1], aspect="auto", cmap='gray')
+    ax[i][1].axis('off')
+
+    ax[i][2].imshow(ndvi_pairs[i][2], aspect="auto", cmap='gray')
+    ax[i][2].axis('off')
+    if i == 0:
+        ax[i][0].set_title("Real RGB", fontsize=10)
+        ax[i][1].set_title("Real NIR based NDVI", fontsize=10)
+        ax[i][2].set_title("Fake NIR based NDVI", fontsize=10)
+
+fig.suptitle(f"color space: {color_space}")
+fig.tight_layout()
+
+fig_file_path = rf".\RGB2NIR_models\실험No_{experiment_no}\{color_space}\result_fig.png"
+plt.savefig(fig_file_path)
+
