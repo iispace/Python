@@ -16,8 +16,8 @@ from torch.utils.data import Dataset
 from torch.utils.data import DataLoader
 import torchvision.transforms as transforms
 #from torchvision.transforms.functional import to_pil_image
-from Models.RGB_NIR_Dataset import RGB_NIR_Dataset
-from Models.RGB_NIR_Dataset import dataloader_info, dataset_info
+from models.RGB_NIR_Dataset import RGB_NIR_Dataset
+from models.RGB_NIR_Dataset import dataloader_info, dataset_info
 from color_space.convert import *
 
 
@@ -266,7 +266,7 @@ def visualize(eval_rgbs_, real_ndvis_, fake_ndvis_, cs_name_, exp_no_, rows=5):
 
 ###################################################################################################################
 # Generator, Discrminator 모델 생성
-from Models.Pix2Pix_RGB2NIR import NIR_GeneratorUNet, Discriminator, initialize_weights
+from models.Pix2Pix_RGB2NIR import NIR_GeneratorUNet, Discriminator, initialize_weights
 
 model_gen = NIR_GeneratorUNet(in_channels=3, out_channels=3).to(device)
 model_dis = Discriminator(in_channels=3).to(device)
