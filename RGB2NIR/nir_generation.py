@@ -312,3 +312,32 @@ for i, cs_transformer in enumerate(colos_spaces):
     train_model(model_gen, model_dis, patch, loss_func_gan, loss_func_pix, lambda_pixel, opt_gen, opt_dis, cs_transformer, train_dl, experiment_no, num_epochs=100)
     evaluate_rgbs, eval_real_ndvis, eval_fake_ndvis = evaluate_model(model_gen, test_img_dir, cs_transformer, cs_name, experiment_no)
     visualize(evaluate_rgbs, eval_real_ndvis, eval_fake_ndvis, cs_name, experiment_no, rows=5)
+
+
+###################################################################################################################
+## 반복 실험 결과 분석 ##
+
+import pandas as pd 
+
+def read_exp_results(exp_no):
+    log_path = rf'.\RGB2NIR_models\실험No_{exp_no}\ndvi_result_log.txt'
+
+    if os.path.exists(log_path):
+        print(f"log_path: {log_path}")
+        
+        df = pd.read_json(log_path, lines=True)
+        df.columns = ["date_time", "color_space", "MSE", "PSNR", "SSIM", "FID", "NDVI_MSE"]
+
+        df.insert(loc=0, column="exp_no", value = [exp_no]*6)
+        return df 
+    else:
+        print(f"No file exists: {log_path}")
+
+dfs = []
+for i in range(1, 5):
+    dfs.append(read_exp_results(i+1))
+    
+df_all = pd.concat(dfs, axis=0)
+df_all.reset_index(inplace=True, drop=True)
+
+df_grouped = df_all.groupby('color_space')[['MSE', 'PSNR', 'SSIM', 'FID', 'NDVI_MSE']].mean().reset_index()
